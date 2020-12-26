@@ -9,7 +9,10 @@
     "bindings": "~1.2.1"
   },
   "scripts": {
-    "test": "tape test/**/test.js"
+    "test": "mocha"
   },
-  "gypfile": true
+  "gypfile": true,
+  "devDependencies": {
+    "mocha": "^8.2.1"
+  }
 }
