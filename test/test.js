@@ -23,10 +23,21 @@ ERROR: syntax error
                     return true;
                 })
         });
-
     });
 
     describe('Pikchr Examples', function () {
+        it('Very basic example', function() {
+           assert.strictEqual(pikchr('line; box "Hello," "World!"; arrow'), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 260.64 76.32">
+<path d="M2,38L74,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<path d="M74,74L182,74L182,2L74,2Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="128" y="28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Hello,</text>
+<text x="128" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">World!</text>
+<polygon points="254,38 242,42 242,33" style="fill:rgb(0,0,0)"/>
+<path d="M182,38L248,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+</svg>
+`)
+        });
+
         it('How To Build Pikchr', function () {
             assert.strictEqual(pikchr(`filewid *= 1.2
 Src:      file "pikchr.y"; move
