@@ -1,0 +1,80 @@
+name: Node.js CI
+on:
+  push:
+    tags:
+      - v*.*
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install -g node-gyp
+    - run: npm install
+    - run: node-gyp configure
+    - run: node-gyp build
+    - run: npm test
+      env:
+        CI: true
+
+  build_macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install -g node-gyp
+    - run: npm install
+    - run: node-gyp configure
+    - run: node-gyp build
+    - run: npm test
+      env:
+        CI: true
+
+  build_windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install -g node-gyp
+    - run: npm install
+    - run: node-gyp configure
+    - run: node-gyp build
+    - run: npm test
+      env:
+        CI: true
+
+  publish:
+    needs: [build_windows, build_linux]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    # Setup .npmrc file to publish to GitHub Packages
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+        registry-url: 'https://npm.pkg.github.com'
+        # Defaults to the user or organization that owns the workflow file
+        scope: '@octocat'
+    - run: npm install
+    - run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
