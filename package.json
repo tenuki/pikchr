@@ -1,0 +1,13 @@
+{
+  "name": "pikchr",
+  "version": "0.0.1",
+  "description": "Pikchr package",
+  "main": "index.js",
+  "dependencies": {
+    "bindings": "~1.2.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "gypfile": true
+}
