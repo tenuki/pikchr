@@ -63,7 +63,7 @@ jobs:
         CI: true
 
   publish:
-    needs: [build_windows, build_linux]
+    needs: [build_windows, build_linux, build_macos]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -73,7 +73,6 @@ jobs:
         node-version: '10.x'
         registry-url: 'https://npm.pkg.github.com'
         # Defaults to the user or organization that owns the workflow file
-        scope: '@octocat'
     - run: npm install
     - run: npm publish
       env:
