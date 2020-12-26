@@ -6,7 +6,7 @@
   "repository": "https://github.com/tenuki/pikchr",
   "homepage": "https://github.com/tenuki/pikchr",
   "license": "0BSD",
-  "author": "David Weil <david.weil@endlesstruction.com.ar> (http://endlesstruction.com.ar/)",
+  "author": "David Weil <tenuki@gmail.com> (http://endlesstruction.com.ar/)",
   "dependencies": {
     "bindings": "~1.2.1"
   },
