@@ -1,21 +1,42 @@
 const assert = require('assert');
-const pikchr = require('../build/Release/pikchr').pikchr;
+const pikchr = require('../build/Release/pikchr');
+
+
+function strictEqual(source, expected, width, height) {
+    const actual = pikchr.pikchr(source);
+    assert.strictEqual(actual, expected);
+    const exversion = pikchr.pikchrex(source);
+    assert.strictEqual(exversion['output'], actual);
+    assert.strictEqual(exversion.width, width, "widths doesn't match");
+    assert.strictEqual(exversion.height, height, "heights doesn't match");
+}
 
 
 describe('Basic Tests', function () {
     describe('Check some errors', function () {
         it('Error is dump to output too', function () {
-            assert.strictEqual(pikchr(`test`), `<div><pre>
+            strictEqual(`test`, `<div><pre>
 /*    1 */  test
            
 ERROR: syntax error
 </pre></div>
-`);
+`, -1, -1);
         });
 
-        it('Error other', function () {
+        it('Error: wrong nr of arguments', function () {
             assert.throws(() => {
-                    pikchr();
+                    pikchr.pikchr();
+                },
+                (err) => {
+                    assert(/Wrong arguments/.test(err));
+                    assert(err instanceof Error);
+                    return true;
+                })
+        });
+
+        it('Error: wrong nr of arguments - ex version', function () {
+            assert.throws(() => {
+                    pikchr.pikchrex();
                 },
                 (err) => {
                     assert(/Wrong arguments/.test(err));
@@ -27,7 +48,7 @@ ERROR: syntax error
 
     describe('Pikchr Examples', function () {
         it('Very basic example', function() {
-           assert.strictEqual(pikchr('line; box "Hello," "World!"; arrow'), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 260.64 76.32">
+           strictEqual('line; box "Hello," "World!"; arrow', `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 260.64 76.32">
 <path d="M2,38L74,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M74,74L182,74L182,2L74,2Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <text x="128" y="28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Hello,</text>
@@ -35,11 +56,11 @@ ERROR: syntax error
 <polygon points="254,38 242,42 242,33" style="fill:rgb(0,0,0)"/>
 <path d="M182,38L248,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 </svg>
-`)
+`, 260, 76)
         });
 
         it('How To Build Pikchr', function () {
-            assert.strictEqual(pikchr(`filewid *= 1.2
+            strictEqual(`filewid *= 1.2
 Src:      file "pikchr.y"; move
 LemonSrc: file "lemon.c"; move
 Lempar:   file "lempar.y"; move
@@ -60,7 +81,7 @@ PikSrc:   file "pikchr.c" with .n at lineht below Lemon.s
           arrow down from PikSrc.s
 CC2:      oval "C-Compiler" ht 50%
           arrow
-Out:      file "pikchr.o" "or" "pikchr.exe" wid 110%`), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 581.587 796.32">
+Out:      file "pikchr.o" "or" "pikchr.exe" wid 110%`, `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 581.587 796.32">
 <path d="M79,110L166,110L166,23L144,2L79,2Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M144,2L144,23L166,23"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <text x="122" y="56" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">pikchr.y</text>
@@ -104,11 +125,11 @@ Out:      file "pikchr.o" "or" "pikchr.exe" wid 110%`), `<svg xmlns='http://www.
 <text x="281" y="740" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">or</text>
 <text x="281" y="760" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">pikchr.exe</text>
 </svg>
-`);
+`, 581, 796);
         });
 
         it('SQLite Architecture Diagram', function () {
-            assert.strictEqual(pikchr(`lineht *= 0.4
+            strictEqual(`lineht *= 0.4
     $margin = lineht*2.5
     scale = 0.75
     fontscale = 1.1
@@ -154,7 +175,7 @@ TC: box same "Test Code"
     box ht (UT.n.y-TC.s.y)+$margin wid In.wid+$margin \\
        at 1/2<UT,TC> fill 0xe0ecc8 behind In
     line invis from 0.25*$margin west of last.se up last.ht \\
-      "Accessories" italic aligned`), `<svg xmlns='http://www.w3.org/2000/svg' width="367" height="453" viewBox="0 0 490.32 605.52">
+      "Accessories" italic aligned`, `<svg xmlns='http://www.w3.org/2000/svg' width="367" height="453" viewBox="0 0 490.32 605.52">
 <path d="M2,293L236,293L236,2L2,2Z"  style="fill:rgb(216,236,208);stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M2,603L236,603L236,311L2,311Z"  style="fill:rgb(208,236,232);stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M254,347L488,347L488,2L254,2Z"  style="fill:rgb(232,216,208);stroke-width:2.16;stroke:rgb(0,0,0);" />
@@ -206,11 +227,11 @@ TC: box same "Test Code"
 <text x="470" y="174" text-anchor="middle" font-style="italic" fill="rgb(0,0,0)" font-size="110%" transform="rotate(-90 470,174)" dominant-baseline="central">SQL Compiler</text>
 <text x="470" y="498" text-anchor="middle" font-style="italic" fill="rgb(0,0,0)" font-size="110%" transform="rotate(-90 470,498)" dominant-baseline="central">Accessories</text>
 </svg>
-`)
+`,367,453)
         })
 
         it('Syntax diagrams', function () {
-            assert.strictEqual(pikchr(`$r = 0.2in
+            strictEqual(`$r = 0.2in
 linerad = 0.75*$r
 linewid = 0.25
 
@@ -265,7 +286,7 @@ oval "\\"print\\"" fit
 arrow
 box "print-args" italic fit
 line right until even with X9 - ($r,0) \\
-  then up until even with X9 then to X9`), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 619.92 193.68">
+  then up until even with X9 then to X9`, `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 619.92 193.68">
 <path d="M7,32L93,32L93,2L7,2Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <text x="50" y="17" text-anchor="middle" font-weight="bold" fill="rgb(0,0,0)" dominant-baseline="central">element</text>
 <path d="M7,32L7,68"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
@@ -322,11 +343,11 @@ line right until even with X9 - ($r,0) \\
 <text x="259" y="176" text-anchor="middle" font-style="italic" fill="rgb(0,0,0)" dominant-baseline="central">print-args</text>
 <path d="M306,176 L 518,176 Q 540,176 540,154 L 540,90 Q 540,68 554,68 L 569,68"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 </svg>
-`);
+`,619,193);
         });
 
         it('Swimlanes', function () {
-            assert.strictEqual(pikchr(`$laneh = 0.75
+            strictEqual(`$laneh = 0.75
 
     # Draw the lanes
     down
@@ -388,7 +409,7 @@ D1: circle same as A1 at C1-(0,$laneh) "1"
 D3: circle same as B3 at B3-(0,2*$laneh) "3"
     arrow 50%
     circle same "4"
-    arrow from D1 to D3 chop`), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 508.32 436.32">
+    arrow from D1 to D3 chop`, `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 508.32 436.32">
 <path d="M2,110L506,110L506,2L2,2Z"  style="fill:rgb(172,201,227);stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M2,218L506,218L506,110L2,110Z"  style="fill:rgb(197,216,239);stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M2,326L506,326L506,218L2,218Z"  style="fill:rgb(172,201,227);stroke-width:2.16;stroke:rgb(0,0,0);" />
@@ -480,11 +501,11 @@ D3: circle same as B3 at B3-(0,2*$laneh) "3"
 <polygon points="161,393 149,393 152,385" style="fill:rgb(0,0,0)"/>
 <path d="M73,360L156,391"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 </svg>
-`);
+`,508,436);
         });
 
         it('Graphs', function () {
-            assert.strictEqual(pikchr(`scale = 0.8
+            strictEqual(`scale = 0.8
 fill = white
 linewid *= 0.5
 circle "C0" fit
@@ -543,7 +564,7 @@ box same width previous.e.x - C2.w.x \\
     with .se at previous.ne \\
     fill 0x9accfc
 "trunk" below at 2nd last box.s
-"feature branch" above at last box.n`), `<svg xmlns='http://www.w3.org/2000/svg' width="429" height="316" viewBox="0 0 537.378 396.448">
+"feature branch" above at last box.n`, `<svg xmlns='http://www.w3.org/2000/svg' width="429" height="316" viewBox="0 0 537.378 396.448">
 <path d="M2,164L535,164L535,93L2,93Z"  style="fill:rgb(198,226,255);stroke-width:1.4472;stroke:rgb(128,128,128);" />
 <path d="M184,93L535,93L535,22L184,22Z"  style="fill:rgb(154,204,252);stroke-width:1.4472;stroke:rgb(128,128,128);" />
 <path d="M2,374L451,374L451,303L2,303Z"  style="fill:rgb(198,226,255);stroke-width:1.4472;stroke:rgb(128,128,128);" />
@@ -619,12 +640,12 @@ box same width previous.e.x - C2.w.x \\
 <text x="226" y="384" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">trunk</text>
 <text x="317" y="222" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">feature branch</text>
 </svg>
-`);
+`,429,316);
         });
 
 
         it('Impossible Trident', function () {
-            assert.strictEqual(pikchr(`# Impossible trident pikchr script
+            strictEqual(`# Impossible trident pikchr script
 # https://en.wikipedia.org/wiki/Impossible_trident
 # pikchr script by Kees Nuyt, license Creative Commons BY-NC-SA 
 # https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -651,7 +672,7 @@ line width lwm right from last ellipse.s then to LV.start
 move right er down ed from last ellipse.n
 ellipse height eh width ew
 line width lwl right from last ellipse.n then to L1.end
-line width lwl right from last ellipse.s then up eh`), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 327.47 146.052">
+line width lwl right from last ellipse.s then up eh`, `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 327.47 146.052">
 <ellipse cx="7" cy="16" rx="5.66929" ry="14.1732"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M7,2L279,2"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M7,30L257,30"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
@@ -663,12 +684,12 @@ line width lwl right from last ellipse.s then up eh`), `<svg xmlns='http://www.w
 <path d="M53,115L325,115L279,2"  style="fill:none;stroke-width:2.16;stroke-linejoin:round;stroke:rgb(0,0,0);" />
 <path d="M53,143L325,143L325,115"  style="fill:none;stroke-width:2.16;stroke-linejoin:round;stroke:rgb(0,0,0);" />
 </svg>
-`);
+`,327,146);
         });
 
 
         it('PIC from The Brian W. Kernighan paper - page 18', function () {
-            assert.strictEqual(pikchr(`define ndblock {
+            strictEqual(`define ndblock {
   box wid boxwid/2 ht boxht/2
   down;  box same with .t at bottom of last box;   box same
 }
@@ -696,7 +717,7 @@ spline -> right .3 from 2nd last box to D3.sw + (dx,0)
 circlerad = .3
 circle invis "ndblock"  at last box.e + (1.2,.2)
 arrow dashed from last circle.w to 5/8<last circle.w,2nd last box> chop
-box invis wid 2*boxwid "ndtable:" with .e at Start.w`), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 587.866 292.32">
+box invis wid 2*boxwid "ndtable:" with .e at Start.w`, `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 587.866 292.32">
 <path d="M81,88L124,88L124,59L81,59Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M81,117L124,117L124,88L81,88Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <path d="M81,146L124,146L124,117L81,117Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
@@ -755,11 +776,11 @@ box invis wid 2*boxwid "ndtable:" with .e at Start.w`), `<svg xmlns='http://www.
 <path d="M398,246L316,255"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
 <text x="139" y="16" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">ndtable:</text>
 </svg>
-`);
+`,587,292);
         });
 
         it('PIC from The Brian W. Kernighan paper - page 19', function () {
-            assert.strictEqual(pikchr(`        arrow "source" "code"
+            strictEqual(`        arrow "source" "code"
 LA:     box "lexical" "analyzer"
         arrow "tokens" above
 P:      box "parser"
@@ -776,7 +797,7 @@ DMP:    box "diagnostic" "message" "printer"
 ST:     box "symbol" "table"
         arrow from LC.ne to DMP.sw
         arrow from Sem.nw to DMP.se
-        arrow <-> from Sem.top to ST.bot`), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 692.64 364.32">
+        arrow <-> from Sem.top to ST.bot`, `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 692.64 364.32">
 <polygon points="74,326 62,330 62,321" style="fill:rgb(0,0,0)"/>
 <path d="M2,326L68,326"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <text x="38" y="314" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">source</text>
@@ -830,10 +851,11 @@ ST:     box "symbol" "table"
 <polygon points="488,74 495,83 487,86" style="fill:rgb(0,0,0)"/>
 <path d="M558,284L489,79"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 </svg>
-`);
+`,692,364);
         });
+
         it('PIC from The Brian W. Kernighan paper - page 20', function () {
-            assert.strictEqual(pikchr(`        circle "DISK"
+            strictEqual(`        circle "DISK"
         arrow "character" "defns" right 150%
 CPU:    box "CPU" "(16-bit mini)"
         arrow <- from top of CPU up "input " rjust
@@ -853,7 +875,7 @@ Paper:  CRT + 1.05,0.75
         circle rad 0.05 at Paper + (0.055, -0.25)
         "   rollers" ljust at Paper + (0.1, -0.25)
 
-`), `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 632.39 224.64">
+`, `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 632.39 224.64">
 <circle cx="38" cy="114" r="36"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <text x="38" y="114" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">DISK</text>
 <polygon points="182,114 170,118 170,110" style="fill:rgb(0,0,0)"/>
@@ -877,7 +899,7 @@ Paper:  CRT + 1.05,0.75
 <circle cx="552" cy="42" r="7.2"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
 <text x="559" y="42" text-anchor="start" fill="rgb(0,0,0)" dominant-baseline="central">   rollers</text>
 </svg>
-`);
+`,632,224);
         });
 
     });

@@ -3,8 +3,6 @@ Pikchr - Diagram renderer
 
 Taken from the [pikchr](https://pikchr.org/home/doc/trunk/homepage.md) homepage:
 
-
-
 > Pikchr (pronounced like "picture") is a [PIC][1]-like markup
 > language for diagrams in technical documentation.  Pikchr is
 > designed to be embedded in [fenced code blocks][2] of
@@ -22,8 +20,11 @@ You can use it as follows:
 ```javascript
 const pikchr = require('pikchr');
 
-pikchr('line ; box "Hello," "World!"; arrow')
+pikchr.pikchr('line ; box "Hello," "World!"; arrow') // -> svg string
+
+pikchr.pikchrex('line ; box "Hello," "World!"; arrow') // -> 
+//  ->  { 'output': output-svg-string, 'width': output-width-size, 'height': 
+output-height-size }
 ```
 
-No support yet to custom class in output svg element nor flags. Also still 
-not return output size.
+No support yet to custom class in output svg element nor flags. 
