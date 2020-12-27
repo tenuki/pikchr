@@ -1,4 +1,4 @@
-name: Node.js CI
+name: On new release Build and Tests
 on:
   push:
     tags:

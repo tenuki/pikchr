@@ -12,6 +12,19 @@ function strictEqual(source, expected, width, height) {
 }
 
 
+VeryBasicExample_Src = 'line; box "Hello," "World!"; arrow';
+VeryBasicExample_Output = `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 260.64 76.32">
+<path d="M2,38L74,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<path d="M74,74L182,74L182,2L74,2Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="128" y="28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Hello,</text>
+<text x="128" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">World!</text>
+<polygon points="254,38 242,42 242,33" style="fill:rgb(0,0,0)"/>
+<path d="M182,38L248,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+</svg>
+`
+
+
+
 describe('Basic Tests', function () {
     describe('Check some errors', function () {
         it('Error is dump to output too', function () {
@@ -33,7 +46,9 @@ ERROR: syntax error
                     return true;
                 })
         });
+    });
 
+    describe("Ex-functionallity - errors", function(){
         it('Error: wrong nr of arguments - ex version', function () {
             assert.throws(() => {
                     pikchr.pikchrex();
@@ -44,19 +59,79 @@ ERROR: syntax error
                     return true;
                 })
         });
+
+        it('Error: wrong nr of arguments - don\'t accept 3 arguments', function () {
+            assert.throws(() => {
+                    pikchr.pikchrex("arrow", {}, {});
+                },
+                (err) => {
+                    assert(/Wrong arguments/.test(err));
+                    assert(err instanceof Error);
+                    return true;
+                })
+        });
+
+        it('Error: wrong nr of arguments - wrong argument types: dark mode', function () {
+            assert.throws(() => {
+                    pikchr.pikchrex("arrow", {dark_mode: "true"});
+                },
+                (err) => {
+                    assert(/Wrong arguments/.test(err));
+                    assert(err instanceof Error);
+                    return true;
+                })
+        });
+        it('Error: wrong nr of arguments - wrong argument types: text errors', function () {
+            assert.throws(() => {
+                    pikchr.pikchrex("arrow", {text_errors: "true"});
+                },
+                (err) => {
+                    assert(/Wrong arguments/.test(err));
+                    assert(err instanceof Error);
+                    return true;
+                })
+        });
+        it('Error: wrong nr of arguments - wrong argument types: class name', function () {
+            assert.throws(() => {
+                    pikchr.pikchrex("arrow", {class_name:true});
+                },
+                (err) => {
+                    assert(/Wrong arguments/.test(err));
+                    assert(err instanceof Error);
+                    return true;
+                })
+        });
+    });
+
+    describe("Ex-functionallity new arguments", function(){
+        it('Very basic example - with custom class', function() {
+            const expected = VeryBasicExample_Output.replace('viewBox=',
+                                                    'class="Some class" viewBox=')
+            const result = pikchr.pikchrex(VeryBasicExample_Src, {"class_name": "Some class"});
+           assert.strictEqual(result.output, expected, 260, 76)
+        });
+
+        it('Very basic example - error as text', function() {
+            const result = pikchr.pikchrex(VeryBasicExample_Src,
+                {"text_errors": true})
+           assert.strictEqual(result.output, VeryBasicExample_Output, 260, 76)
+        });
+
+        it('Very basic example - dark mode', function() {
+            const white_version = VeryBasicExample_Output;
+            const result = pikchr.pikchrex(VeryBasicExample_Src,
+                {"dark_mode": true})
+            let black_version = white_version;
+            while((-1!==black_version.indexOf('0,0,0'))) {
+                black_version = black_version.replace('0,0,0', '255,255,255')
+            }
+           assert.strictEqual(result.output, black_version, 260, 76)
+        });
     });
 
     describe('Pikchr Examples', function () {
         it('Very basic example', function() {
-           strictEqual('line; box "Hello," "World!"; arrow', `<svg xmlns='http://www.w3.org/2000/svg' viewBox="0 0 260.64 76.32">
-<path d="M2,38L74,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
-<path d="M74,74L182,74L182,2L74,2Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
-<text x="128" y="28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Hello,</text>
-<text x="128" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">World!</text>
-<polygon points="254,38 242,42 242,33" style="fill:rgb(0,0,0)"/>
-<path d="M182,38L248,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
-</svg>
-`, 260, 76)
+           strictEqual(VeryBasicExample_Src, VeryBasicExample_Output, 260, 76)
         });
 
         it('How To Build Pikchr', function () {
