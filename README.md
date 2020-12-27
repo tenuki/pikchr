@@ -20,7 +20,7 @@ it compatible with many node versions.
 You can use it as follows:
 
 ```javascript
-const pikchr = require('pikchr').pikchr;
+const pikchr = require('pikchr');
 
 pikchr('line ; box "Hello," "World!"; arrow')
 ```
