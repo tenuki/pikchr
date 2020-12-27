@@ -73,6 +73,7 @@ jobs:
         node-version: '10.x'
         # Defaults to the user or organization that owns the workflow file
     - run: npm install
+    - run: npm whoami
     - run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
