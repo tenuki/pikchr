@@ -63,7 +63,8 @@ jobs:
 #        CI: true
 
   publish:
-    needs: [build_windows, build_linux, build_macos]
+    needs: build_linux
+    #needs: [build_windows, build_linux, build_macos]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
