@@ -7895,4 +7895,4 @@ int Pikchr_Init(Tcl_Interp *interp){
 
 
 #line 7918 "pikchr.c"
-#endif PIKCHR
+#endif /* PIKCHR */

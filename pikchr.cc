@@ -17,7 +17,7 @@ char *pikchr(
   );
 }
 
-napi_value RetError(napi_env env, char* msg) {
+napi_value RetError(napi_env env, const char* msg) {
     napi_throw_type_error(env, nullptr, msg);
     return nullptr;
 }
@@ -134,13 +134,13 @@ napi_value pikchr_ex(napi_env env, napi_callback_info info, bool ex) {
       if (valuetype0!=napi_object)
         return RetError(env, "Wrong arguments");
 
-      status = get_string_property(env, args[1], "class_name", (char**) &zclass);
+      status = get_string_property(env, args[1], (char*) "class_name", (char**) &zclass);
       if (status==napi_generic_failure)
         return RetError(env, "Wrong arguments");
       assert(status == napi_ok);
 
       bool dark_mode;
-      status = get_bool_property(env, args[1], "dark_mode", (bool*)&dark_mode, false);
+      status = get_bool_property(env, args[1], (char*) "dark_mode", (bool*)&dark_mode, false);
       if (status==napi_generic_failure)
         return RetError(env, "Wrong arguments");
       assert(status == napi_ok);
@@ -148,7 +148,7 @@ napi_value pikchr_ex(napi_env env, napi_callback_info info, bool ex) {
         flags = flags | 0x0002;
 
       bool text_errors;
-      status = get_bool_property(env, args[1], "text_errors", (bool*)&text_errors, false);
+      status = get_bool_property(env, args[1], (char*) "text_errors", (bool*)&text_errors, false);
       if (status==napi_generic_failure)
         return RetError(env, "Wrong arguments");
       assert(status == napi_ok);
